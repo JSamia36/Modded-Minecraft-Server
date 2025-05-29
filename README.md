@@ -47,6 +47,16 @@ These can vary so much depending on resources and needs for each server. For sta
 - simulation-distance=6
 - view-distance=6
 - white-list=true
+- max-tick-time=-1 (Server won't crash due to a certain tick amount)
+
+I'd also recommend changing the start.sh file, theres multiple things to modify but I usually change the RAM amount
+- Xms (sets the starting RAM amount)
+- Xmx (sets the max RAM amount)
+- -XX:+DisableExplicitGC (This disables mods calling System.gc())
+- -XX:+AlwaysPreTouch
+- -XX:+UseDynamicNumberOfGCThreads (Will help scales based on need)
+
+Theres a few more  you can use these are just some examples to help your server run a bit smoother.
 
   
 Again these are just personal settings I use on my most recent ATM10 server. There is so many other customizations I'll add as I modify including pregenerating chunks
