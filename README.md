@@ -39,6 +39,41 @@ sudo apt install playit
 ```
 We can then go to /usr/local/bin and run play it with `./playit`
 
+## Alternative to PlayIt
+Some people had connection issues when using PlayIt so I recently decided to look into alternatives. This method uses AWS, tailscale, Cloudflare and Nginx so a bit more complicated then the quick run of playit. To get started I spun up a Ubuntu t3.nano instance and created a new security group for it. The security group should have ports 24454 (Voicechat) and 25565 (Server) open to all traffic and through TCP. I also made sure port 22 (SSH) was open for connecting. Once logged into your instance we will run a few commands:
+```
+sudo apt update && sudo apt upgrade -y
+sudo apt install nginx libnginx-mod-stream
+curl -fsSL https://tailscale.com/install.sh | sh
+```
+At this point you need to have a tailscale account created so please do so now if you haven't, you can then login to the terminal.
+```
+sudo tailscale up
+```
+Once install tailscale on both the server and the AWS instance, we should get an IP address for both of them. We have to go on the AWS instance and edit the config file
+```
+sudo nano /etc/nginx/nginx.conf
+```
+Scroll all the way to the bottom and we have to paste in some code:
+```
+stream {
+  server {
+        listen 25565;
+        proxy_pass SERVER_TAIL_IP:25565;
+  }
+
+  server {
+        listen 24454 udp;
+        proxy_pass SERVER_TAIL_IP:24454;
+  }
+}
+```
+Please make sure to change the SERVER_TAIL_IP to the IP of the minecraft server you got in Tailscale. Save that config and I typically then reboot the AWS instance just to make sure it takes to it. At this point it should be functional, if you go on minecraft, if everything went well, you can connect to the server using the AWS public IP. 
+
+Next would be Cloudflare if you want a domain name instead of IP address. First connect the domain you want to use (or purchase), in the domain page we will go under DNS records. I then added a new A type record, added the AWS IP address and subdomain name. It is important you turn off the proxy status or it will break your connection.
+
+Lastly if you are also setting up voicechat mod like me, you will need to edit the configuration file and set the bind address to the AWS public IP address, once that is done, restart the server and it should work.
+
 # Configs
 These can vary so much depending on resources and needs for each server. For starters I recommend
 - difficulty=normal
