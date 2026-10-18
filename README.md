@@ -32,10 +32,15 @@ That will run, we will have to cancel it then modify the eula.txt to be TRUE, sa
 # Networking setup
 You could port forward and do all of that but I personally don't have option or like to expose my home IP address so instead I create a tunnel. Cloudflare is typically most common but won't work for a minecraft server so instead we have to use playit.gg. I used this for setting up my dedicated PalWorld server so just going to copy that part over here:
 ```
-curl -SsL https://playit-cloud.github.io/ppa/key.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/playit.gpg >/dev/null
-echo "deb [signed-by=/etc/apt/trusted.gpg.d/playit.gpg] https://playit-cloud.github.io/ppa/data ./" | sudo tee /etc/apt/sources.list.d/playit-cloud.list
+curl -SsL https://packages.playit.gg/keys/playit.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/playit.gpg >/dev/null
+sudo chmod 0644 /usr/share/keyrings/playit.gpg
+sudo curl -fsSL -o /etc/apt/sources.list.d/playit.list https://packages.playit.gg/repo-files/playit-debian.list
 sudo apt update
 sudo apt install playit
+```
+OR (UPDATED)
+```
+curl -fsSL https://packages.playit.gg/install.sh | bash
 ```
 We can then go to /usr/local/bin and run play it with `./playit`
 
